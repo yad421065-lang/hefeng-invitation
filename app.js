@@ -1,3 +1,4 @@
+import {createInvitationLink,readInvitationLink,validateInvitation} from './invitation-link.mjs?v=20260917';
 const cover=document.getElementById('cover');
 const invitation=document.getElementById('invitation');
 const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -22,7 +23,11 @@ document.getElementById('close-invitation').addEventListener('click',()=>{
 const $=id=>document.getElementById(id);
 const localDate=new Date();
 const today=[localDate.getFullYear(),String(localDate.getMonth()+1).padStart(2,'0'),String(localDate.getDate()).padStart(2,'0')].join('-');
-const invitationData={name:'XX',id:'HF2026 001',trait:'［沟通中打动我们的真实特点］',start:'2026-10-23',issue:today};
+const defaultInvitation={name:'XX',id:'HF2026 001',trait:'［沟通中打动我们的真实特点］',start:'2026-10-23',issue:today};
+const initialLink=readInvitationLink(location.href);
+const invitationData={...(initialLink.status==='valid'?initialLink.data:defaultInvitation)};
+let isPersonalized=initialLink.status==='valid';
+let currentSearch=location.search;
 const formatDate=(value,style='long')=>{const [y,m,d]=value.split('-');return style==='short'?`${y}.${m}.${d}`:`${y}年${m}月${d}日`;};
 $('receipt-date').value=today;$('custom-issue').value=today;
 function applyInvitation(){
@@ -35,15 +40,20 @@ function applyInvitation(){
  const nameEl=$('personal-cover-name'),numEl=$('personal-cover-number');
  nameEl.hidden=invitationData.name==='XX';nameEl.textContent=`致 ${invitationData.name}`;
  numEl.hidden=invitationData.id==='HF2026 001';numEl.textContent=invitationData.id;
+ document.querySelector('.cover-original').alt=`奶油白烫金信封，致 ${invitationData.name} 的和风传媒主播启程邀请函，邀请编号 ${invitationData.id}`;
  if(invitationData.name!=='XX'&&!$('receipt-name').value)$('receipt-name').value=invitationData.name;
+ document.querySelectorAll('[data-share-invitation]').forEach(button=>button.hidden=!isPersonalized);
+ document.title=isPersonalized?`致 ${invitationData.name} · 和风传媒启程邀请函`:'和风传媒 · 主播启程邀请函';
 }
 applyInvitation();
+$('invitation-link-error').hidden=initialLink.status!=='invalid';
 let toastTimer;
 function toast(message){$('toast').textContent=message;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,3000);}
 function openCustomize(){
  $('custom-name').value=invitationData.name;$('custom-id').value=invitationData.id;
  $('custom-trait').value=invitationData.trait.startsWith('［')?'':invitationData.trait;
  $('custom-start').value=invitationData.start;$('custom-issue').value=invitationData.issue;
+ $('custom-error').textContent='';
  $('customize-dialog').showModal();
 }
 for(const button of document.querySelectorAll('[data-customize]'))button.addEventListener('click',openCustomize);
@@ -52,13 +62,45 @@ for(const dialog of document.querySelectorAll('dialog'))dialog.addEventListener(
 $('customize-form').addEventListener('submit',event=>{
  event.preventDefault();
  for(const id of ['custom-name','custom-id','custom-trait']){const field=$(id);if(!field.value.trim()){field.setCustomValidity('请填写此项。');field.reportValidity();field.addEventListener('input',()=>field.setCustomValidity(''),{once:true});return;}}
- Object.assign(invitationData,{name:$('custom-name').value.trim(),id:$('custom-id').value.trim(),trait:$('custom-trait').value.trim(),start:$('custom-start').value,issue:$('custom-issue').value});
- applyInvitation();$('customize-dialog').close();toast('专属邀请已更新');
+ try{
+  const data=validateInvitation({name:$('custom-name').value,id:$('custom-id').value,trait:$('custom-trait').value,start:$('custom-start').value,issue:$('custom-issue').value});
+  const link=createInvitationLink(location.href,data);
+  history.replaceState(null,'',link);currentSearch=location.search;
+  // A new addressee must not inherit the previous recipient's reply or signature.
+  if(data.name!==invitationData.name||data.id!==invitationData.id)resetReceipt();
+  Object.assign(invitationData,data);isPersonalized=true;
+  applyInvitation();$('invitation-link-error').hidden=true;$('customize-dialog').close();openShare();
+ }catch(error){$('custom-error').textContent=error.message||'暂时无法生成链接，请重试。';}
+});
+
+function openShare(){
+ if(!isPersonalized){openCustomize();return;}
+ $('share-recipient').textContent=invitationData.name;$('share-number').textContent=invitationData.id;
+ $('share-link').value=createInvitationLink(location.href,invitationData);
+ $('share-feedback').textContent='';$('share-dialog').showModal();
+}
+for(const button of document.querySelectorAll('[data-share-invitation]'))button.addEventListener('click',openShare);
+$('share-link').addEventListener('click',()=>{$('share-link').select();});
+$('copy-invitation-link').addEventListener('click',async()=>{
+ try{
+  await navigator.clipboard.writeText($('share-link').value);
+  $('share-feedback').textContent='专属链接已复制，可以粘贴发送给对方。';
+ }catch{
+  $('share-link').focus();$('share-link').select();$('share-link').setSelectionRange(0,$('share-link').value.length);
+  $('share-feedback').textContent='请长按或使用复制快捷键，复制上方完整链接。';
+ }
 });
 
 $('receipt-goal').addEventListener('input',()=>{$('goal-count').textContent=`${$('receipt-goal').value.length} / 160`;});
 let signatureMode='typed',drawing=false,strokes=[],currentStroke=[];
 const pad=$('signature-pad');const pen=pad.getContext('2d');
+function resetReceipt(){
+ $('receipt-form').reset();$('receipt-date').value=today;$('goal-count').textContent='0 / 160';
+ strokes=[];currentStroke=[];drawing=false;renderStrokes();
+ signatureMode='typed';$('typed-area').hidden=false;$('drawn-area').hidden=true;$('typed-signature').required=true;
+ $('switch-signature').textContent='切换手写签名';$('form-error').textContent='';
+ if(receiptUrl){URL.revokeObjectURL(receiptUrl);receiptUrl=undefined;$('receipt-preview').removeAttribute('src');$('download-receipt').removeAttribute('href');}
+}
 function resizePad(){
  const width=pad.clientWidth;if(!width)return;
  const ratio=window.devicePixelRatio||1;pad.width=Math.round(width*ratio);pad.height=Math.round(145*ratio);pen.setTransform(ratio,0,0,ratio,0,0);renderStrokes();
@@ -80,6 +122,13 @@ $('switch-signature').addEventListener('click',()=>{
 window.addEventListener('resize',()=>{if(signatureMode==='drawn')resizePad();});
 
 let receiptUrl;
+window.addEventListener('popstate',()=>{
+ if(currentSearch===location.search)return;
+ currentSearch=location.search;const saved=readInvitationLink(location.href);
+ isPersonalized=saved.status==='valid';Object.assign(invitationData,isPersonalized?saved.data:defaultInvitation);
+ resetReceipt();applyInvitation();$('invitation-link-error').hidden=saved.status!=='invalid';
+ for(const dialog of document.querySelectorAll('dialog[open]'))dialog.close();
+});
 function drawReceipt(data){
  const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=2200;
  const ctx=canvas.getContext('2d');

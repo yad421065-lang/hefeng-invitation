@@ -6,7 +6,7 @@
   <meta name="description" content="和风传媒主播启程邀请。让每一次开播，都离更大的舞台近一点。">
   <title>和风传媒 · 主播启程邀请函</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='16' fill='%23957043'/%3E%3Cpath d='M9 8v16M23 8v16M9 16h14M18 8l-5 16' stroke='%23f7efdd' fill='none' stroke-width='1.6'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=20260917">
 </head>
 <body>
   <section class="cover" id="cover" aria-label="和风传媒主播启程邀请函封面">
@@ -24,7 +24,8 @@
       <button class="open-hint" id="open-hint">轻触火漆，开启邀请 <span>↓</span></button>
     </div>
     <div class="cover-side-note"><span>EXCLUSIVELY<br>FOR YOU</span><span class="cover-index">01 <i>/ 03</i></span></div>
-    <button class="customize-button" data-customize>定制邀请 <span>↗</span></button>
+    <p id="invitation-link-error" class="invitation-link-error" role="alert" hidden>这封邀请的链接不完整，请向发送人索取完整链接。</p>
+    <div class="cover-actions"><button class="customize-button" data-customize>定制邀请 <span>↗</span></button><button class="share-cover-button" data-share-invitation hidden>分享这封邀请</button></div>
   </section>
   <main id="invitation" hidden>
     <header class="site-header"><a class="wordmark" href="#letter">HEFENG<span>和风传媒</span></a><nav aria-label="邀请函导航"><a href="#letter" aria-current="page">启程邀请</a><a href="#receipt">启程回执</a><button id="close-invitation">收起信笺 <span>↗</span></button></nav></header>
@@ -69,11 +70,12 @@
         <button type="submit" class="gold-button">生成我的启程回执 <span>↗</span></button><p class="form-footnote">生成后下载回执，发送给你的和风对接人。</p>
       </form>
     </section>
-    <footer><a class="wordmark" href="#letter">HEFENG<span>和风传媒</span></a><p>A MORE MEANINGFUL TOMORROW, TOGETHER.</p><button data-customize>定制这封邀请 ↗</button></footer>
+    <footer><a class="wordmark" href="#letter">HEFENG<span>和风传媒</span></a><p>A MORE MEANINGFUL TOMORROW, TOGETHER.</p><div class="footer-actions"><button data-share-invitation hidden>分享这封邀请 ↗</button><button data-customize>定制这封邀请 ↗</button></div></footer>
   </main>
-  <dialog id="customize-dialog" class="paper-dialog" aria-labelledby="customize-title"><button type="button" class="dialog-close" data-close-dialog aria-label="关闭定制邀请">×</button><p class="eyebrow">MAKE IT PERSONAL</p><h2 id="customize-title">专属于你的一封邀请。</h2><p class="dialog-note">替换姓名与真实特点，让邀请更郑重。修改会即时应用到本次预览。</p><form id="customize-form"><label for="custom-name">主播称呼</label><input id="custom-name" maxlength="12" required value="XX"><label for="custom-id">邀请编号</label><input id="custom-id" maxlength="18" required value="HF2026 001"><label for="custom-trait">沟通中打动团队的真实特点</label><textarea id="custom-trait" rows="3" maxlength="100" required placeholder="例如：表达自然，能把日常小事讲得很有趣"></textarea><div class="date-grid"><div><label for="custom-start">预计合作启动日期</label><input id="custom-start" type="date" required value="2026-10-23"></div><div><label for="custom-issue">邀请日期</label><input id="custom-issue" type="date" required></div></div><button class="gold-button" type="submit">应用到邀请函 <span>↗</span></button></form></dialog>
+  <dialog id="customize-dialog" class="paper-dialog" aria-labelledby="customize-title"><button type="button" class="dialog-close" data-close-dialog aria-label="关闭定制邀请">×</button><p class="eyebrow">MAKE IT PERSONAL</p><h2 id="customize-title">专属于你的一封邀请。</h2><p class="dialog-note">填写专属信息，生成可转发的邀请链接。对方打开或刷新，都会看到这封邀请；下一封的修改不会影响已发出的链接。</p><form id="customize-form"><label for="custom-name">主播称呼</label><input id="custom-name" maxlength="12" required value="XX"><label for="custom-id">邀请编号</label><input id="custom-id" maxlength="18" required value="HF2026 001"><label for="custom-trait">沟通中打动团队的真实特点</label><textarea id="custom-trait" rows="3" maxlength="100" required placeholder="例如：表达自然，能把日常小事讲得很有趣"></textarea><div class="date-grid"><div><label for="custom-start">预计合作启动日期</label><input id="custom-start" type="date" min="1000-01-01" max="9999-12-31" required value="2026-10-23"></div><div><label for="custom-issue">邀请日期</label><input id="custom-issue" type="date" min="1000-01-01" max="9999-12-31" required></div></div><p id="custom-error" class="form-error" role="alert"></p><button class="gold-button" type="submit">保存并生成专属链接 <span>↗</span></button></form></dialog>
+  <dialog id="share-dialog" class="paper-dialog share-dialog" aria-labelledby="share-title"><button type="button" class="dialog-close" data-close-dialog aria-label="关闭分享邀请">×</button><p class="eyebrow">AN INVITATION, JUST FOR YOU</p><h2 id="share-title">专属邀请，已备好。</h2><div class="share-recipient"><span>致 <b id="share-recipient"></b></span><span id="share-number"></span></div><p class="dialog-note">复制下方完整链接发给对方，即可看到这封专属邀请。刷新或换一台设备打开，内容也会保留。</p><label for="share-link">这封邀请的专属链接</label><textarea id="share-link" class="share-link" rows="3" readonly spellcheck="false" aria-describedby="share-link-note"></textarea><p id="share-link-note" class="share-note">每个链接保留生成时的内容。请保存好对应链接；修改后需要重新复制发送。</p><button id="copy-invitation-link" class="gold-button" type="button">复制专属邀请链接 <span>↗</span></button><p id="share-feedback" class="share-feedback" role="status" aria-live="polite"></p><button type="button" class="preview-invitation-button" data-close-dialog>查看这封邀请</button></dialog>
   <dialog id="receipt-dialog" class="paper-dialog receipt-dialog" aria-labelledby="receipt-dialog-title"><button type="button" class="dialog-close" data-close-dialog aria-label="关闭回执预览">×</button><p class="eyebrow">READY FOR YOUR NEXT CHAPTER</p><h2 id="receipt-dialog-title">期待与你，一起上场。</h2><p class="dialog-note">回执已生成。请下载留存，并发送给你的和风对接人完成后续确认。</p><img id="receipt-preview" alt="已填写的启程回执预览"><a id="download-receipt" class="gold-button" download="和风传媒-启程回执.png">下载启程回执 <span>↓</span></a><p class="form-footnote">信息仅在当前页面处理，未自动提交给和风传媒。</p></dialog>
   <div class="toast" id="toast" role="status" hidden></div>
-  <script src="app.js"></script>
+  <script type="module" src="app.js?v=20260917"></script>
 </body>
 </html>
