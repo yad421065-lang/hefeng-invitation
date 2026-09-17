@@ -58,9 +58,9 @@
         <label class="field-label" for="receipt-name">姓名或主播昵称 <span>*</span></label><input id="receipt-name" name="name" maxlength="24" required placeholder="写下你希望被记住的名字" autocomplete="name">
         <fieldset class="mode-field"><legend>拟选择的合作形式 <span>*</span></legend><div class="radio-options"><label><input type="radio" name="mode" value="线上开播" required><span>线上开播</span></label><label><input type="radio" name="mode" value="重庆线下开播"><span>重庆线下开播</span></label><label><input type="radio" name="mode" value="待确认"><span>待确认</span></label></div></fieldset>
         <div class="field-heading"><label class="field-label" for="receipt-goal">我想通过直播做到的一件事 <span>*</span></label><span id="goal-count">0 / 160</span></div><textarea id="receipt-goal" name="goal" rows="3" maxlength="160" required placeholder="关于表达、成长，或一个正在靠近的梦想……"></textarea>
-        <div class="signature-heading"><label class="field-label" for="typed-signature">主播签名 <span>*</span></label><button id="switch-signature" type="button">切换手写签名</button></div>
-        <div id="typed-area"><input id="typed-signature" name="signature" required maxlength="24" placeholder="输入你的签名" autocomplete="off"></div>
-        <div id="drawn-area" hidden><canvas id="signature-pad" aria-label="手写签名区域，亦可切换为输入签名"></canvas><div class="signature-tools"><span>在此用手指或鼠标签名</span><button id="clear-signature" type="button">清除重写</button></div></div>
+        <div class="signature-heading"><label class="field-label" for="typed-signature">主播签名 <span>*</span></label><button id="switch-signature" type="button">切换输入签名</button></div>
+        <div id="typed-area" hidden><input id="typed-signature" name="signature" maxlength="24" placeholder="输入你的签名" autocomplete="off"></div>
+        <div id="drawn-area"><canvas id="signature-pad" aria-label="手写签名区域，亦可切换为输入签名"></canvas><div class="signature-tools"><span>在此用手指或鼠标签名</span><button id="clear-signature" type="button">清除重写</button></div></div>
         <label class="field-label date-label" for="receipt-date">签署日期 <span>*</span></label><input id="receipt-date" name="date" type="date" required>
         <p class="change-note">如我的时间或计划发生变化，我会提前与对接人说明。</p>
         <label class="consent"><input id="receipt-consent" type="checkbox" required><span>我已阅读并确认以上合作意向。</span></label>
@@ -76,6 +76,6 @@
   <dialog id="share-dialog" class="paper-dialog share-dialog" aria-labelledby="share-title"><button type="button" class="dialog-close" data-close-dialog aria-label="关闭分享邀请">×</button><p class="eyebrow">AN INVITATION, JUST FOR YOU</p><h2 id="share-title">专属邀请，已备好。</h2><div class="share-recipient"><span>致 <b id="share-recipient"></b></span><span id="share-number"></span></div><p class="dialog-note">复制下方完整链接发给对方，即可看到这封专属邀请。刷新或换一台设备打开，内容也会保留。</p><label for="share-link">这封邀请的专属链接</label><textarea id="share-link" class="share-link" rows="3" readonly spellcheck="false" aria-describedby="share-link-note"></textarea><p id="share-link-note" class="share-note">每个链接保留生成时的内容。请保存好对应链接；修改后需要重新复制发送。</p><button id="copy-invitation-link" class="gold-button" type="button">复制专属邀请链接 <span>↗</span></button><p id="share-feedback" class="share-feedback" role="status" aria-live="polite"></p><button type="button" class="preview-invitation-button" data-close-dialog>查看这封邀请</button></dialog>
   <dialog id="receipt-dialog" class="paper-dialog receipt-dialog" aria-labelledby="receipt-dialog-title"><button type="button" class="dialog-close" data-close-dialog aria-label="关闭回执预览">×</button><p class="eyebrow">READY FOR YOUR NEXT CHAPTER</p><h2 id="receipt-dialog-title">期待与你，一起上场。</h2><p class="dialog-note">回执已生成。请下载留存，并发送给你的和风对接人完成后续确认。</p><img id="receipt-preview" alt="已填写的启程回执预览"><a id="download-receipt" class="gold-button" download="和风传媒-启程回执.png">下载启程回执 <span>↓</span></a><p class="form-footnote">信息仅在当前页面处理，未自动提交给和风传媒。</p></dialog>
   <div class="toast" id="toast" role="status" hidden></div>
-  <script type="module" src="app.js?v=20260917"></script>
+  <script type="module" src="app.js?v=20260917-handwriting"></script>
 </body>
 </html>

@@ -11,6 +11,7 @@ function openInvitation(){
  setTimeout(()=>cover.classList.add('exit'),reduceMotion?0:2050);
  setTimeout(()=>{
   cover.hidden=true;invitation.hidden=false;invitation.classList.add('entered');
+  if(signatureMode==='drawn')resizePad();
   window.scrollTo(0,0);document.querySelector('h1').setAttribute('tabindex','-1');document.querySelector('h1').focus({preventScroll:true});
  },reduceMotion?40:2850);
 }
@@ -92,13 +93,13 @@ $('copy-invitation-link').addEventListener('click',async()=>{
 });
 
 $('receipt-goal').addEventListener('input',()=>{$('goal-count').textContent=`${$('receipt-goal').value.length} / 160`;});
-let signatureMode='typed',drawing=false,strokes=[],currentStroke=[];
+let signatureMode='drawn',drawing=false,strokes=[],currentStroke=[];
 const pad=$('signature-pad');const pen=pad.getContext('2d');
 function resetReceipt(){
  $('receipt-form').reset();$('receipt-date').value=today;$('goal-count').textContent='0 / 160';
  strokes=[];currentStroke=[];drawing=false;renderStrokes();
- signatureMode='typed';$('typed-area').hidden=false;$('drawn-area').hidden=true;$('typed-signature').required=true;
- $('switch-signature').textContent='切换手写签名';$('form-error').textContent='';
+ signatureMode='drawn';$('typed-area').hidden=true;$('drawn-area').hidden=false;$('typed-signature').required=false;
+ $('switch-signature').textContent='切换输入签名';$('form-error').textContent='';resizePad();
  if(receiptUrl){URL.revokeObjectURL(receiptUrl);receiptUrl=undefined;$('receipt-preview').removeAttribute('src');$('download-receipt').removeAttribute('href');}
 }
 function resizePad(){
